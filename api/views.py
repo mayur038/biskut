@@ -2,13 +2,24 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status, permissions,generics
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import AccessToken
 from .utils import send_verification_email
 from django.http import HttpResponse
 from django.shortcuts import render
 User = get_user_model()
+
+
+
+# #
+# for Sweets
+# #
+from rest_framework.exceptions import NotFound, PermissionDenied
+from . models import Sweet
+from . serializer import SweetSerializer
+from . permissions import IsAdminUser
+
 # your_app/views.py
 
 class RegisterView(APIView):
@@ -27,7 +38,7 @@ class RegisterView(APIView):
             if not request.user.is_authenticated or request.user.role != 'admin':
                 return Response({"error": "Only admins can create admin users."}, status=status.HTTP_403_FORBIDDEN)
 
-        user = User.objects.create_user(username=username, email=email, password=password, role=role)
+        user = User.objects.create_user(username=username, email=email, password=password, role=role,is_staff = True)
         send_verification_email(user)
         return Response(
             {
@@ -87,3 +98,42 @@ class LogoutView(APIView):
     def post(self, request):
         # Frontend should delete tokens locally
         return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+    
+#
+# Sweet operations
+# ##
+
+class SweetListView(generics.ListAPIView):
+    queryset = Sweet.objects.all().order_by('name')
+    serializer_class = SweetSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+# CREATE sweet (Admin only)
+class SweetCreateView(generics.CreateAPIView):
+    queryset = Sweet.objects.all()
+    serializer_class = SweetSerializer
+    permission_classes = [IsAdminUser]
+    
+# UPDATE sweet (Admin only)
+class SweetUpdateView(generics.UpdateAPIView):
+    queryset = Sweet.objects.all()
+    serializer_class = SweetSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_object(self):
+        try:
+            return Sweet.objects.get(pk=self.kwargs['pk'])
+        except Sweet.DoesNotExist:
+            raise NotFound("Sweet not found.")
+
+# DELETE sweet (Admin only)
+class SweetDeleteView(generics.DestroyAPIView):
+    queryset = Sweet.objects.all()
+    serializer_class = SweetSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_object(self):
+        try:
+            return Sweet.objects.get(pk=self.kwargs['pk'])
+        except Sweet.DoesNotExist:
+            raise NotFound("Sweet not found.")
