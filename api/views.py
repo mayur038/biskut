@@ -87,9 +87,9 @@ class VerifyEmailView(APIView):
             user.is_email_verified = True
             user.save()
            
-            return render(request, 'email_verification/verified.html')
+            return render(request, 'EmailVerification.html')
         except Exception as e:
-            return HttpResponse("<h2>Invalid or expired token.</h2>", status=400)
+           return render(request, 'EmailVerification.html')
         
 
 class LogoutView(APIView):
