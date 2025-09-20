@@ -8,7 +8,7 @@ def generate_verification_token(user):
 
 def send_verification_email(user):
     token = generate_verification_token(user)
-    verify_url = f"http://127.0.0.1:8000/verify-email/?token={token}"
+    verify_url = f"http://127.0.0.1:8000/api/verify-email/?token={token}"
 
     subject = "Verify Your Email"
     message = f"Hi {user.username},\n\nPlease verify your email by clicking the link below:\n{verify_url}"
