@@ -189,7 +189,8 @@ python manage.py runserver
 ## Author
 
 **Mayur Gohil**
-Email: [mayurgohil.d8@gmail.com](mailto:mayurgohil.d8@gmail.com)
+
+**Email:** [mayurgohil.d8@gmail.com](mailto:mayurgohil.d8@gmail.com)
 
 ---
 
