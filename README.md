@@ -179,6 +179,21 @@ python manage.py runserver
 ```
 
 ---
+## 🧪 Postman API Collection
+
+You can import this project’s API collection into Postman to test all endpoints quickly:
+
+**Download Link:** [Biskut Sweet Shop Postman Collection]([https://www.getpostman.com/collections/<your-collection-id>](https://www.postman.com/virtual-events/workspace/buiskut/request/41464244-28b1ff32-0126-4e38-9d90-16ad03ed6466?action=share&source=copy-link&creator=41464244))
+
+**How to use:**
+1. Open Postman.
+2. Click on `Import`.
+3. Paste the link above or upload the JSON collection file.
+4. Set the `Authorization` header for protected endpoints with `Bearer <access_token>`.
+5. Test endpoints like:
+   - `POST /api/register/` → Create a user
+
+
 
 ## Screenshots
 
