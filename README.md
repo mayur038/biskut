@@ -183,7 +183,8 @@ python manage.py runserver
 
 You can import this project’s API collection into Postman to test all endpoints quickly:
 
-**Download Link:** [Biskut Sweet Shop Postman Collection]([https://www.getpostman.com/collections/<your-collection-id>](https://www.postman.com/virtual-events/workspace/buiskut/request/41464244-28b1ff32-0126-4e38-9d90-16ad03ed6466?action=share&source=copy-link&creator=41464244))
+**Download Link:** [Biskut Sweet Shop Postman Collection](https://www.postman.com/virtual-events/workspace/buiskut/request/41464244-28b1ff32-0126-4e38-9d90-16ad03ed6466?action=share&source=copy-link&creator=41464244)
+
 
 **How to use:**
 1. Open Postman.
