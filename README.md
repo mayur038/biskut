@@ -1,116 +1,195 @@
 
-# Biskut Sweet Shop Management
+---
 
-<img width="1597" height="240" alt="image" src="https://github.com/user-attachments/assets/82f86307-2d08-4aa0-8dc5-ea3826917c79" />
+# 🍬 Biskut Sweet Shop Management
 
+**Biskut** is a Sweet Shop Management System developed using **Django** for the backend and **HTML, CSS, and JavaScript** for the frontend. It allows **customers** to browse and purchase sweets, while **admins** can manage inventory, create new sweets, and restock existing ones.
+
+---
+
+## Table of Contents
+
+1. [Project Overview](#project-overview)
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Setup Instructions](#setup-instructions)
+5. [API Endpoints](#api-endpoints)
+6. [Frontend Functionality](#frontend-functionality)
+7. [Sample JSON Inputs](#sample-json-inputs)
+8. [Screenshots](#screenshots)
+9. [Author](#author)
+
+---
 
 ## Project Overview
-**Biskut Sweet Shop Management** is a web-based application developed using **Django** for backend and **HTML, CSS, JavaScript** for frontend. The system allows users to browse, search, and purchase sweets, while providing administrators full control to manage sweet inventory, including adding, updating, restocking, and deleting sweets. 
 
-Key features include:
-- Secure JWT user authentication and role-based access (Admin/User).
-- Two factor Email Verification
-- CRUD operations for sweets management.
-- Inventory management with purchase and restock operations.
-- Optional user profile information retrieval.
-- Maintaining all activity logs
+Biskut simplifies sweet shop operations:
 
+* **Customers** can view sweets, make purchases, and check their purchase history.
+* **Admins** can create, update, delete, and restock sweets while maintaining inventory logs.
+* Tracks **inventory logs** for both purchases and restocks to maintain transparency.
+
+---
+
+## Features
+
+### For Customers
+
+* Login/Register system with email verification.
+* Browse all available sweets.
+* Purchase sweets with quantity selection and payment method.
+* View personalized greeting with username and role.
+
+### For Admins
+
+* Create new sweets in the inventory.
+* Update and delete sweets.
+* Restock existing sweets.
+* Track inventory actions via logs.
+
+### Common
+
+* JWT-based authentication with **access** and **refresh** tokens.
+* Clear alert messages for successful or failed actions.
+
+---
+
+## Tech Stack
+
+* **Backend:** Django, Django REST Framework, Simple JWT
+* **Frontend:** HTML, CSS, JavaScript (Vanilla)
+* **Database:** SQLite (default)
+* **Authentication:** JWT (access & refresh tokens)
+
+---
 
 ## Setup Instructions
 
-Follow these steps to run the project locally:
+1. Clone the repository:
 
-1. **Clone the repository**
 ```bash
-git clone <repository-url>
-cd biskut-sweet-shop
-````
+git clone <repo_url>
+cd Biskut
+```
 
-2. **Create and activate virtual environment**
+2. Create a virtual environment and activate it:
 
 ```bash
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
+source venv/bin/activate    # Linux/macOS
+venv\Scripts\activate       # Windows
 ```
 
-3. **Install dependencies**
+3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Apply migrations**
+4. Apply migrations:
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-5. **Create superuser (Admin)**
-
-```bash
-python manage.py createsuperuser
-```
-
-6. **Run the development server**
+5. Run the development server:
 
 ```bash
 python manage.py runserver
 ```
 
-7. Open your browser and go to:
-
-```
-http://127.0.0.1:8000/
-```
+6. Open in browser: `http://127.0.0.1:8000`
 
 ---
 
 ## API Endpoints
 
-### SWEETS API (Protected: Auth Required)
+### Authentication
 
-| Method | Endpoint           | Description                                | Access             |
-| ------ | ------------------ | ------------------------------------------ | ------------------ |
-| POST   | /api/sweets/       | Add a new sweet                            | Admin only         |
-| GET    | /api/sweets/       | Get list of all sweets                     | Any logged-in user |
-| GET    | /api/sweets/search | Search sweets by name/category/price range | Any logged-in user |
-| PUT    | /api/sweets/<id>/  | Update sweet details                       | Admin only         |
-| DELETE | /api/sweets/<id>/  | Delete a sweet                             | Admin only         |
+| Method | Endpoint             | Description                                 |
+| ------ | -------------------- | ------------------------------------------- |
+| POST   | `/api/register/`     | Register a new user                         |
+| POST   | `/api/login/`        | Login user, returns access & refresh tokens |
+| POST   | `/api/logout/`       | Logout user (frontend clears tokens)        |
+| GET    | `/api/current-user/` | Fetch current logged-in user info           |
 
-### INVENTORY API (Protected)
+### Sweets Management
 
-| Method | Endpoint                  | Description                        | Access             |
-| ------ | ------------------------- | ---------------------------------- | ------------------ |
-| POST   | /api/sweets/<id>/purchase | Purchase sweet (decrease quantity) | Any logged-in user |
-| POST   | /api/sweets/<id>/restock  | Restock sweet (increase quantity)  | Admin only         |
-
-### Optional Utility API
-
-| Method | Endpoint      | Description                      |
-| ------ | ------------- | -------------------------------- |
-| GET    | /api/users/me | Get profile info of current user |
+| Method | Endpoint                     | Role          | Description           |
+| ------ | ---------------------------- | ------------- | --------------------- |
+| GET    | `/api/sweets/`               | Authenticated | List all sweets       |
+| POST   | `/api/sweets/create/`        | Admin         | Create a new sweet    |
+| PUT    | `/api/sweets/<id>/update/`   | Admin         | Update existing sweet |
+| DELETE | `/api/sweets/<id>/delete/`   | Admin         | Delete sweet          |
+| GET    | `/api/sweets/search/`        | Authenticated | Search sweets         |
+| POST   | `/api/sweets/<id>/purchase/` | Customer      | Purchase a sweet      |
+| POST   | `/inventory/<id>/restock/`   | Admin         | Restock sweet         |
 
 ---
 
-## Postman Collection
+## Frontend Functionality
 
-You can test all APIs using this Postman collection:
-
-[Postman Collection Link](https://www.postman.com/virtual-events/workspace/buiskut/collection/41464244-a36a28e7-7c3c-4bb8-8459-55de4641ff2a?action=share&creator=41464244)
+* **Login/Register:** Toggle between login and registration forms.
+* **Dashboard:** Displays personalized greeting and role of logged-in user.
+* **All Sweets:** Shows sweets grid with name, category, price, quantity, and actions.
+* **Customer Actions:** Purchase sweets via modal with quantity & payment method.
+* **Admin Actions:** Create, update, delete, and restock sweets with inline input.
+* **Alerts:** Success or error alerts are displayed on all actions.
 
 ---
 
-## Test Coverage
+## Sample JSON Inputs
 
-The project includes unit tests for all API endpoints and core functionalities.
+### Create Sweet (Admin)
 
-* **Estimated code coverage:** \~85–90%
+```json
+{
+    "name": "Bisk",
+    "category": "Sweet",
+    "price": 222.20,
+    "quantity": 2
+}
+```
 
-This ensures that CRUD operations, authentication, and inventory management are thoroughly validated.
+### Restock Sweet (Admin)
+
+```json
+{
+    "quantity": 9
+}
+```
+
+### Purchase Sweet (Customer)
+
+```json
+{
+    "quantity": 2
+}
+```
+
+**Response Example:**
+
+```json
+{
+    "message": "Purchased 2 x M",
+    "total_price": 6.0,
+    "current_quantity": 3
+}
+```
+
+---
+
+## Screenshots
+
+![alt text](image.png)
+
+---
+
+## Author
+
+**Mayur Gohil**
+Email: [mayur@example.com](mailto:mayur@example.com)
 
 ---
 

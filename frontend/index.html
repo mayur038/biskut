@@ -6,6 +6,21 @@
   <title>Biskut - Sweet Shop</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <style>
+   .postman {
+        background-color: #fffae6;
+        border: 1px solid #ffd700;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+    .postman a {
+        color: #ffd700;
+        text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -14,7 +29,12 @@
     <h1>🍬 Biskut</h1>
     <p>Your Sweet Shop Management System</p>
   </div>
-
+   <div class="postman">
+            Hi All, Frontend is Under develpment phase please use Postman to see all Backend API development as it's completed with all TEst Driven programing with more than 70% code coverage.
+            <a href="https://www.postman.com/virtual-events/workspace/buiskut/collection/41464244-a36a28e7-7c3c-4bb8-8459-55de4641ff2a?action=share&creator=41464244">
+                Visit Postman for API development
+            </a> 
+        </div>
   <!-- Alerts -->
   <div id="alertContainer"></div>
 
@@ -56,12 +76,12 @@
           <label for="registerPassword">Password</label>
           <input type="password" id="registerPassword" required>
         </div>
-          <div class="form-group hidden">
-              <label for="registerRole">Role</label>
-            <select id="registerRole">
-                <option value="Customer" selected>Customer</option>
-                <option value="Admin">Admin</option>
-            </select>
+        <div class="form-group hidden">
+          <label for="registerRole">Role</label>
+          <select id="registerRole">
+              <option value="Customer" selected>Customer</option>
+              <option value="Admin">Admin</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-primary btn-full">Create Account</button>
       </form>
@@ -72,7 +92,7 @@
     </div>
   </div>
 
-  <!-- Main Application (hidden until login) -->
+  <!-- Main Application -->
   <div id="mainApp" class="hidden">
     <div class="user-bar">
       <div class="user-info">
@@ -93,44 +113,64 @@
   </div>
 </div>
 
+<!-- Purchase Modal -->
+<div id="purchaseModal" class="hidden modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h3 id="modalSweetName"></h3>
+    <p>Price: $<span id="modalSweetPrice"></span></p>
+    <div class="form-group">
+      <label>Quantity:</label>
+      <input type="number" id="modalQty" min="1" value="1">
+    </div>
+    <div class="form-group">
+      <label>Payment Method:</label>
+      <select id="modalPayment">
+        <option value="cod">Cash on Delivery</option>
+        <option value="upi">UPI</option>
+      </select>
+    </div>
+    <div id="upiImageContainer" class="hidden">
+      <img src="{% static 'images/upi.jpeg' %}" alt="UPI" style="width:150px;margin-top:10px;">
+    </div>
+    <button id="confirmPurchase" class="btn btn-primary btn-full">Confirm Purchase</button>
+  </div>
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const authSection = document.getElementById("authSection");
   const mainApp = document.getElementById("mainApp");
   const userName = document.getElementById("userName");
-  const userRole = document.getElementById("userRole");
+  const userRoleEl = document.getElementById("userRole");
   const alertContainer = document.getElementById("alertContainer");
   const sweetsGrid = document.getElementById("sweetsGrid");
 
-  // Show alert
-  function showAlert(msg, isError=true) {
-    // Remove old alerts
+  function showAlert(msg, isError=true){
     alertContainer.innerHTML = "";
     const div = document.createElement("div");
     div.className = `alert ${isError ? 'error' : 'success'}`;
     div.textContent = msg;
     alertContainer.appendChild(div);
+    console.log(isError ? "Error: " + msg : "Success: " + msg);
     setTimeout(()=> div.remove(), 4000);
   }
 
-  // Show main app
-  function showApp(user) {
+  function showApp(user){
     authSection.classList.add("hidden");
     mainApp.classList.remove("hidden");
     userName.textContent = user.username;
-    userRole.textContent = user.role;
+    userRoleEl.textContent = user.role;
     loadSweets();
   }
 
-  // Show login form
-  function showLogin() {
+  function showLogin(){
     authSection.classList.remove("hidden");
     mainApp.classList.add("hidden");
     document.getElementById("registerForm").classList.add("hidden");
     document.getElementById("loginForm").classList.remove("hidden");
   }
 
-  // Check existing login
   const storedUser = localStorage.getItem("user");
   if (storedUser && localStorage.getItem("access")) {
     showApp(JSON.parse(storedUser));
@@ -161,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
       showAlert("Login error");
     }
   });
-  
+
   // Register
   document.getElementById("registerFormElement").addEventListener("submit", async (e)=>{
     e.preventDefault();
@@ -194,7 +234,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("loginForm").classList.add("hidden");
     document.getElementById("registerForm").classList.remove("hidden");
   });
-
   document.getElementById("showLogin")?.addEventListener("click", (e)=>{
     e.preventDefault();
     showLogin();
@@ -209,6 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
         headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ refresh })
       });
+      console.log("Logout API called");
     } catch(err){
       console.error("Logout error", err);
     } finally {
@@ -217,175 +257,115 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Load sweets (placeholder, replace with actual fetch)
- <!-- inside your existing <script> DOMContentLoaded -->
-
-// Load sweets with improved UI
-async function loadSweets() {
-  sweetsGrid.innerHTML = "";
-  try {
-    const res = await fetch("/api/sweets/", {
-      method:"GET",
-      headers:{ "Authorization": `Bearer ${localStorage.getItem("access")}` }
-    });
-    const data = await res.json();
-    if(res.ok && Array.isArray(data)){
-      data.forEach(sweet=>{
-        const div = document.createElement("div");
-        div.className = "card sweet-card";
-
-        // Image placeholder URL based on sweet name
-       // Fixed size Unsplash image for sweets
-const imageUrl = `https://images.unsplash.com/photo-1578985545062-69928b1d9587?crop=entropy&cs=tinysrgb&fit=crop&h=200&w=200`;
-
-
-        div.innerHTML = `
-          <img src="${imageUrl}" style="text-align:center;border-radius:10px;margin:auto;" alt="${sweet.name}">
-          <h4>${sweet.name}</h4>
-          <p>Category: ${sweet.category}</p>
-          <p>Price: $${sweet.price}</p>
-          <p>Available: ${sweet.quantity}</p>
-        `;
-
-        // Customer: Purchase Section
-        if(JSON.parse(localStorage.getItem("user")).role === "Customer"){
-          const purchaseDiv = document.createElement("div");
-          purchaseDiv.className = "purchase-section";
-          purchaseDiv.innerHTML = `
-            <input type="number" min="1" max="${sweet.quantity}" value="1" class="purchase-qty">
-            <button class="btn btn-primary btn-small">Purchase</button>
-          `;
-          div.appendChild(purchaseDiv);
-
-          const purchaseBtn = purchaseDiv.querySelector("button");
-          purchaseBtn.addEventListener("click", async ()=>{
-            const qty = parseInt(purchaseDiv.querySelector("input").value);
-            if(qty < 1 || qty > sweet.quantity){
-              showAlert("Invalid quantity");
-              return;
-            }
-            try {
-              const res = await fetch(`/api/sweets/${sweet.id}/purchase/`, {
-                method:"POST",
-                headers:{
-                  "Content-Type":"application/json",
-                  "Authorization": `Bearer ${localStorage.getItem("access")}`
-                },
-                body: JSON.stringify({quantity: qty})
-              });
-              const data = await res.json();
-              if(res.ok){
-                showAlert(`Purchased ${qty} ${sweet.name}`, false);
-                loadSweets(); // refresh grid
-              } else {
-                showAlert(data.error || "Purchase failed");
-              }
-            } catch(err){
-              console.error(err);
-              showAlert("Purchase error");
-            }
-          });
-        }
-
-        // Admin: Delete & Restock
-        if(JSON.parse(localStorage.getItem("user")).role === "Admin"){
-          const adminDiv = document.createElement("div");
-          adminDiv.className = "admin-section";
-          adminDiv.innerHTML = `
-            <button class="btn btn-danger btn-small">Delete</button>
-            <input type="number" min="1" placeholder="Restock qty" class="restock-qty">
-            <button class="btn btn-secondary btn-small">Restock</button>
-          `;
-          div.appendChild(adminDiv);
-
-          // Delete button
-          adminDiv.querySelector(".btn-danger").addEventListener("click", async ()=>{
-            if(!confirm(`Delete ${sweet.name}?`)) return;
-            try {
-              const res = await fetch(`/api/sweets/${sweet.id}/delete/`, {
-                method:"DELETE",
-                headers:{
-                  "Authorization": `Bearer ${localStorage.getItem("access")}`
-                }
-              });
-              if(res.ok){
-                showAlert(`${sweet.name} deleted`, false);
-                loadSweets();
-              } else {
-                const data = await res.json();
-                showAlert(data.error || "Delete failed");
-              }
-            } catch(err){
-              console.error(err);
-              showAlert("Delete error");
-            }
-          });
-
-          // Restock button
-          adminDiv.querySelector(".btn-secondary").addEventListener("click", async ()=>{
-            const qty = parseInt(adminDiv.querySelector(".restock-qty").value);
-            if(qty < 1){
-              showAlert("Enter valid restock quantity");
-              return;
-            }
-            try {
-              const res = await fetch(`/inventory/${sweet.id}/restock`, {
-                method:"POST",
-                headers:{
-                  "Content-Type":"application/json",
-                  "Authorization": `Bearer ${localStorage.getItem("access")}`
-                },
-                body: JSON.stringify({quantity: qty})
-              });
-              const data = await res.json();
-              if(res.ok){
-                showAlert(`${sweet.name} restocked by ${qty}`, false);
-                loadSweets();
-              } else {
-                showAlert(data.error || "Restock failed");
-              }
-            } catch(err){
-              console.error(err);
-              showAlert("Restock error");
-            }
-          });
-        }
-
-        sweetsGrid.appendChild(div);
+  // Load sweets
+  async function loadSweets() {
+    sweetsGrid.innerHTML = "";
+    try {
+      const res = await fetch("/api/sweets/", {
+        method:"GET",
+        headers:{ "Authorization": `Bearer ${localStorage.getItem("access")}` }
       });
-    } else {
-      showAlert("Failed to load sweets");
-    }
-  } catch(err){
-    console.error(err);
-    showAlert("Error loading sweets");
-  }
-}
+      const data = await res.json();
+      if(res.ok && Array.isArray(data)){
+        data.forEach(sweet=>{
+          const div = document.createElement("div");
+          div.className = "card sweet-card";
+          const imageUrl = `https://images.unsplash.com/photo-1578985545062-69928b1d9587?crop=entropy&cs=tinysrgb&fit=crop&h=200&w=200`;
+          div.innerHTML = `
+            <img src="${imageUrl}" style="border-radius:10px;margin:auto;" alt="${sweet.name}">
+            <h4>${sweet.name}</h4>
+            <p>Category: ${sweet.category}</p>
+            <p>Price: $${sweet.price}</p>
+            <p>Available: ${sweet.quantity}</p>
+          `;
 
+          const userRole = JSON.parse(localStorage.getItem("user")).role;
+
+          // Customer purchase
+          if(userRole==="Customer"){
+            const purchaseDiv = document.createElement("div");
+            purchaseDiv.className = "purchase-section";
+            purchaseDiv.innerHTML = `<button class="btn btn-primary btn-small">Purchase</button>`;
+            div.appendChild(purchaseDiv);
+
+            purchaseDiv.querySelector("button").addEventListener("click", async ()=>{
+              const modal = document.getElementById("purchaseModal");
+              modal.classList.remove("hidden");
+              document.getElementById("modalSweetName").textContent = sweet.name;
+              document.getElementById("modalSweetPrice").textContent = sweet.price;
+              const modalQty = document.getElementById("modalQty");
+              modalQty.max = sweet.quantity; modalQty.value=1;
+              const paymentSelect = document.getElementById("modalPayment");
+              const upiImage = document.getElementById("upiImageContainer");
+              paymentSelect.value="cod"; upiImage.classList.add("hidden");
+              paymentSelect.onchange = ()=> upiImage.classList.toggle("hidden", paymentSelect.value!=="upi");
+
+              document.getElementById("confirmPurchase").onclick = async ()=>{
+                const qty = parseInt(modalQty.value);
+                if(qty<1 || qty>sweet.quantity){ showAlert("Invalid quantity"); return; }
+                try{
+                  const res = await fetch(`/api/sweets/${sweet.id}/purchase/`,{
+                    method:"POST",
+                    headers:{
+                      "Content-Type":"application/json",
+                      "Authorization": `Bearer ${localStorage.getItem("access")}`
+                    },
+                    body: JSON.stringify({quantity: qty, payment: paymentSelect.value})
+                  });
+                  const data = await res.json();
+                  if(res.ok){ showAlert(`Purchased ${qty} ${sweet.name}`, false); console.log("Purchase success", data); modal.classList.add("hidden"); loadSweets(); }
+                  else { showAlert(data.error || "Purchase failed"); console.error("Purchase failed", data); }
+                } catch(err){ console.error("Purchase error", err); showAlert("Purchase error"); }
+              };
+
+              document.getElementById("closeModal").onclick = ()=> modal.classList.add("hidden");
+            });
+          }
+
+          // Admin: Delete & Restock
+          if(userRole==="Admin"){
+            const adminDiv = document.createElement("div");
+            adminDiv.className="admin-section";
+            adminDiv.innerHTML = `
+              <button class="btn btn-danger btn-small">Delete</button>
+              <input type="number" min="1" placeholder="Restock qty" class="restock-qty">
+              <button class="btn btn-secondary btn-small">Restock</button>
+            `;
+            div.appendChild(adminDiv);
+
+            // Delete
+            adminDiv.querySelector(".btn-danger").addEventListener("click", async ()=>{
+              if(!confirm(`Delete ${sweet.name}?`)) return;
+              try{
+                const res = await fetch(`/api/sweets/${sweet.id}/delete/`, { method:"DELETE", headers:{ "Authorization": `Bearer ${localStorage.getItem("access")}` } });
+                if(res.ok){ showAlert(`${sweet.name} deleted`, false); console.log("Delete success"); loadSweets(); }
+                else { const data = await res.json(); showAlert(data.error || "Delete failed"); console.error("Delete failed", data); }
+              } catch(err){ console.error("Delete error", err); showAlert("Delete error"); }
+            });
+
+            // Restock
+            adminDiv.querySelector(".btn-secondary").addEventListener("click", async ()=>{
+              const qty = parseInt(adminDiv.querySelector(".restock-qty").value);
+              if(qty<1){ showAlert("Enter valid restock quantity"); return; }
+              try{
+                const res = await fetch(`/api/sweets/${sweet.id}/restock/`,{
+                  method:"POST",
+                  headers:{ "Content-Type":"application/json","Authorization": `Bearer ${localStorage.getItem("access")}` },
+                  body: JSON.stringify({quantity: qty})
+                });
+                const data = await res.json();
+                if(res.ok){ showAlert(`${sweet.name} restocked by ${qty}`, false); console.log("Restock success", data); loadSweets(); }
+                else { showAlert(data.error || "Restock failed"); console.error("Restock failed", data); }
+              } catch(err){ console.error("Restock error", err); showAlert("Restock error"); }
+            });
+          }
+
+          sweetsGrid.appendChild(div);
+        });
+      } else { showAlert("Failed to load sweets"); console.error("Load sweets failed", data); }
+    } catch(err){ console.error("Error loading sweets", err); showAlert("Error loading sweets"); }
+  }
 });
 </script>
-<!-- Add this modal div inside <body> but outside container -->
-<div id="purchaseModal" class="hidden modal">
-  <div class="modal-content">
-    <span id="closeModal" class="close">&times;</span>
-    <h3 id="modalSweetName"></h3>
-    <p>Price: $<span id="modalSweetPrice"></span></p>
-    <div class="form-group">
-      <label>Quantity:</label>
-      <input type="number" id="modalQty" min="1" value="1">
-    </div>
-    <div class="form-group">
-      <label>Payment Method:</label>
-      <select id="modalPayment">
-        <option value="cod">Cash on Delivery</option>
-        <option value="upi">UPI</option>
-      </select>
-    </div>
-    <div id="upiImageContainer" class="hidden">
-      <img src="{% static 'image/upi.png' %}" alt="UPI" style="width:150px;margin-top:10px;">
-    </div>
-    <button id="confirmPurchase" class="btn btn-primary btn-full">Confirm Purchase</button>
-  </div>
-</div>
 </body>
 </html>

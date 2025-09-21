@@ -1,16 +1,27 @@
+"""
+@description: API views for Sweet Shop purchase, restock, and current user info
+@author: Mayur Gohil
+@date_of_modification: 22-Sep-2025
+"""
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
 
 from api.models import Sweet, Purchase, InventoryLog
-from . serializer import PurchaseSerializer, RestockSerializer
-from . permissions import IsAdminUser
+from .serializer import PurchaseSerializer, RestockSerializer
+from .permissions import IsAdminUser
 
-# -----------------------------
+
+# ---------------------------------------------
 # Purchase Sweet (Authenticated users)
-# -----------------------------
+# ---------------------------------------------
 class SweetPurchaseView(APIView):
+    """
+    @description: API for purchasing sweets. Decreases stock, logs inventory, and creates a purchase record.
+    @input_json: {"quantity": <int>}
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
@@ -56,10 +67,14 @@ class SweetPurchaseView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-# -----------------------------
+# ---------------------------------------------
 # Restock Sweet (Admin only)
-# -----------------------------
+# ---------------------------------------------
 class SweetRestockView(APIView):
+    """
+    @description: API for admin to restock sweets. Updates stock and logs inventory action.
+    @input_json: {"quantity": <int>}
+    """
     permission_classes = [IsAdminUser]
 
     def post(self, request, pk):
@@ -88,10 +103,13 @@ class SweetRestockView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-# -----------------------------
+# ---------------------------------------------
 # Current User Profile
-# -----------------------------
+# ---------------------------------------------
 class CurrentUserView(APIView):
+    """
+    @description: API to fetch details of currently authenticated user.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
