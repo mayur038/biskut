@@ -23,4 +23,7 @@ urlpatterns = [
     path('', views.frontend_view, name='frontend'),
     path('api/', include('api.urls')),
     path('inventory/', include('inventory.urls')),
+
+    #  My Frontend Hooks 
+   
 ]

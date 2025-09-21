@@ -1,729 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biskut - Sweet Shop</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-    <style>
-        .postman {
-            background-color: #fffae6;
-            border: 1px solid #ffd700;
-            padding: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biskut - Sweet Shop</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🍬 Biskut</h1>
-            <p>Your Sweet Shop Management System</p>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1>🍬 Biskut</h1>
+    <p>Your Sweet Shop Management System</p>
+  </div>
+
+  <!-- Alerts -->
+  <div id="alertContainer"></div>
+
+  <!-- Authentication Section -->
+  <div id="authSection">
+    <!-- Login Form -->
+    <div id="loginForm" class="card auth-card">
+      <h2 class="text-center mb-4">Welcome Back</h2>
+      <form id="loginFormElement">
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" required>
         </div>
-          <div class="postman">
-            Hi All, Frontend is Under develpment phase please use Postman to see all Backend API development as it's completed with all Test Driven programing with more than 70% code coverage.
-            <a href="https://www.postman.com/virtual-events/workspace/buiskut/collection/41464244-a36a28e7-7c3c-4bb8-8459-55de4641ff2a?action=share&creator=41464244">
-                Visit Postman for API development
-            </a> 
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
         </div>
-        <!-- Alerts -->
-        <div id="alertContainer"></div>
-
-        <!-- Authentication Section -->
-        <div id="authSection">
-            <!-- Login Form -->
-            <div id="loginForm" class="card auth-card">
-                <h2 class="text-center mb-4">Welcome Back</h2>
-                <form id="loginFormElement">
-                    <div class="form-group">
-                        <label for="loginUsername">Username</label>
-                        <input type="text" id="loginUsername" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
-                </form>
-                <p class="text-center mt-4">
-                    Don't have an account? 
-                    <a href="#" id="showRegister" class="link">Create one</a>
-                </p>
-            </div>
-
-            <!-- Register Form -->
-            <div id="registerForm" class="card auth-card hidden">
-                <h2 class="text-center mb-4">Create Account</h2>
-                <form id="registerFormElement">
-                    <div class="form-group">
-                        <label for="registerUsername">Username</label>
-                        <input type="text" id="registerUsername" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerEmail">Email</label>
-                        <input type="email" id="registerEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Password</label>
-                        <input type="password" id="registerPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerRole">Role</label>
-                        <select id="registerRole" required>
-                            <option value="Customer">Customer</option>
-                            <option value="Admin">Admin</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
-                </form>
-                <p class="text-center mt-4">
-                    Already have an account? 
-                    <a href="#" id="showLogin" class="link">Sign in</a>
-                </p>
-            </div>
-        </div>
-
-        <!-- Main Application -->
-        <div id="mainApp" class="hidden">
-            <!-- User Info Bar -->
-            <div class="user-bar">
-                <div class="user-info">
-                    <h3>Welcome, <span id="userName"></span></h3>
-                    <p>Role: <span id="userRole"></span></p>
-                </div>
-                <button id="logoutBtn" class="btn btn-secondary">Sign Out</button>
-            </div>
-
-            <!-- Navigation -->
-            <div class="nav">
-                <button class="nav-item active" data-tab="sweets">All Sweets</button>
-                <button class="nav-item" data-tab="search">Search</button>
-                <button class="nav-item hidden" data-tab="admin" id="adminTab">Admin</button>
-            </div>
-
-            <!-- All Sweets Tab -->
-            <div id="sweetsTab" class="tab-content">
-                <div class="grid" id="sweetsGrid">
-                    <!-- Sweets will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Search Tab -->
-            <div id="searchTab" class="tab-content hidden">
-                <div class="search-bar">
-                    <div class="search-row">
-                        <input type="text" id="searchName" placeholder="Search by name...">
-                        <select id="searchCategory">
-                            <option value="">All Categories</option>
-                            <option value="Chocolate">Chocolate</option>
-                            <option value="Candy">Candy</option>
-                            <option value="Gummy">Gummy</option>
-                            <option value="Hard Candy">Hard Candy</option>
-                            <option value="Lollipop">Lollipop</option>
-                        </select>
-                        <input type="number" id="minPrice" placeholder="Min Price" step="0.01">
-                        <input type="number" id="maxPrice" placeholder="Max Price" step="0.01">
-                        <button class="btn btn-primary" id="searchBtn">Search</button>
-                    </div>
-                </div>
-                <div class="grid" id="searchResults"></div>
-            </div>
-
-            <!-- Admin Tab -->
-            <div id="adminTab" class="tab-content hidden">
-                <div class="mb-4">
-                    <button class="btn btn-primary" id="addSweetBtn">Add New Sweet</button>
-                </div>
-                <div class="grid" id="adminSweetsGrid"></div>
-            </div>
-        </div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+      </form>
+      <p class="text-center mt-4">
+        Don't have an account? 
+        <a href="#" id="showRegister" class="link">Create one</a>
+      </p>
     </div>
 
-    <!-- Add Sweet Modal -->
-    <div id="addSweetModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Add New Sweet</h2>
-                <button class="close" type="button">&times;</button>
-            </div>
-            <form id="addSweetForm">
-                <div class="form-group">
-                    <label for="sweetName">Name</label>
-                    <input type="text" id="sweetName" required>
-                </div>
-                <div class="form-group">
-                    <label for="sweetCategory">Category</label>
-                    <select id="sweetCategory" required>
-                        <option value="Chocolate">Chocolate</option>
-                        <option value="Candy">Candy</option>
-                        <option value="Gummy">Gummy</option>
-                        <option value="Hard Candy">Hard Candy</option>
-                        <option value="Lollipop">Lollipop</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="sweetPrice">Price (₹)</label>
-                    <input type="number" id="sweetPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="sweetQuantity">Quantity</label>
-                    <input type="number" id="sweetQuantity" min="0" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Add Sweet</button>
-            </form>
+    <!-- Register Form -->
+    <div id="registerForm" class="card auth-card hidden">
+      <h2 class="text-center mb-4">Create Account</h2>
+      <form id="registerFormElement">
+        <div class="form-group">
+          <label for="registerUsername">Username</label>
+          <input type="text" id="registerUsername" required>
         </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required>
+        </div>
+          <div class="form-group hidden">
+              <label for="registerRole">Role</label>
+            <select id="registerRole">
+                <option value="Customer" selected>Customer</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+      <p class="text-center mt-4">
+        Already have an account? 
+        <a href="#" id="showLogin" class="link">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Application (hidden until login) -->
+  <div id="mainApp" class="hidden">
+    <div class="user-bar">
+      <div class="user-info">
+        <h3>Welcome, <span id="userName"></span></h3>
+        <p>Role: <span id="userRole"></span></p>
+      </div>
+      <button id="logoutBtn" class="btn btn-secondary">Sign Out</button>
     </div>
 
-    <!-- Edit Sweet Modal -->
-    <div id="editSweetModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Edit Sweet</h2>
-                <button class="close" type="button">&times;</button>
-            </div>
-            <form id="editSweetForm">
-                <input type="hidden" id="editSweetId">
-                <div class="form-group">
-                    <label for="editSweetName">Name</label>
-                    <input type="text" id="editSweetName" required>
-                </div>
-                <div class="form-group">
-                    <label for="editSweetCategory">Category</label>
-                    <select id="editSweetCategory" required>
-                        <option value="Chocolate">Chocolate</option>
-                        <option value="Candy">Candy</option>
-                        <option value="Gummy">Gummy</option>
-                        <option value="Hard Candy">Hard Candy</option>
-                        <option value="Lollipop">Lollipop</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editSweetPrice">Price (₹)</label>
-                    <input type="number" id="editSweetPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="editSweetQuantity">Quantity</label>
-                    <input type="number" id="editSweetQuantity" min="0" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">Update Sweet</button>
-            </form>
-        </div>
+    <!-- Navigation -->
+    <div class="nav">
+      <button class="nav-item active" id="allSweetsBtn">All Sweets</button>
+      <button class="nav-item" id="searchBtn">Search</button>
     </div>
 
-    <!-- Restock Modal -->
-    <div id="restockModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Restock Sweet</h2>
-                <button class="close" type="button">&times;</button>
-            </div>
-            <form id="restockForm">
-                <input type="hidden" id="restockSweetId">
-                <div class="form-group">
-                    <label for="restockQuantity">Quantity to Add</label>
-                    <input type="number" id="restockQuantity" min="1" required>
-                </div>
-                <button type="submit" class="btn btn-success btn-full">Restock</button>
-            </form>
-        </div>
+    <!-- Content Grid -->
+    <div class="grid" id="sweetsGrid"></div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const authSection = document.getElementById("authSection");
+  const mainApp = document.getElementById("mainApp");
+  const userName = document.getElementById("userName");
+  const userRole = document.getElementById("userRole");
+  const alertContainer = document.getElementById("alertContainer");
+  const sweetsGrid = document.getElementById("sweetsGrid");
+
+  // Show alert
+  function showAlert(msg, isError=true) {
+    // Remove old alerts
+    alertContainer.innerHTML = "";
+    const div = document.createElement("div");
+    div.className = `alert ${isError ? 'error' : 'success'}`;
+    div.textContent = msg;
+    alertContainer.appendChild(div);
+    setTimeout(()=> div.remove(), 4000);
+  }
+
+  // Show main app
+  function showApp(user) {
+    authSection.classList.add("hidden");
+    mainApp.classList.remove("hidden");
+    userName.textContent = user.username;
+    userRole.textContent = user.role;
+    loadSweets();
+  }
+
+  // Show login form
+  function showLogin() {
+    authSection.classList.remove("hidden");
+    mainApp.classList.add("hidden");
+    document.getElementById("registerForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+  }
+
+  // Check existing login
+  const storedUser = localStorage.getItem("user");
+  if (storedUser && localStorage.getItem("access")) {
+    showApp(JSON.parse(storedUser));
+  }
+
+  // Login
+  document.getElementById("loginFormElement").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const username = document.getElementById("loginUsername").value;
+    const password = document.getElementById("loginPassword").value;
+    try {
+      const res = await fetch("/api/login/", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if(res.ok){
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        localStorage.setItem("user", JSON.stringify({username:data.username, role:data.role}));
+        showApp({username:data.username, role:data.role});
+      } else {
+        showAlert(data.error || "Login failed");
+      }
+    } catch(err){
+      console.error(err);
+      showAlert("Login error");
+    }
+  });
+  
+  // Register
+  document.getElementById("registerFormElement").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const username = document.getElementById("registerUsername").value;
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
+    const role = document.getElementById("registerRole").value;
+    try {
+      const res = await fetch("/api/register/", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ username, email, password, role })
+      });
+      const data = await res.json();
+      if(res.ok){
+        showAlert("Registration successful!", false);
+        showLogin();
+      } else {
+        showAlert(JSON.stringify(data));
+      }
+    } catch(err){
+      console.error(err);
+      showAlert("Register error");
+    }
+  });
+
+  // Toggle forms
+  document.getElementById("showRegister")?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("registerForm").classList.remove("hidden");
+  });
+
+  document.getElementById("showLogin")?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    showLogin();
+  });
+
+  // Logout
+  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+    const refresh = localStorage.getItem("refresh");
+    try {
+      await fetch("/api/logout/", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ refresh })
+      });
+    } catch(err){
+      console.error("Logout error", err);
+    } finally {
+      localStorage.clear();
+      showLogin();
+    }
+  });
+
+  // Load sweets (placeholder, replace with actual fetch)
+ <!-- inside your existing <script> DOMContentLoaded -->
+
+// Load sweets with improved UI
+async function loadSweets() {
+  sweetsGrid.innerHTML = "";
+  try {
+    const res = await fetch("/api/sweets/", {
+      method:"GET",
+      headers:{ "Authorization": `Bearer ${localStorage.getItem("access")}` }
+    });
+    const data = await res.json();
+    if(res.ok && Array.isArray(data)){
+      data.forEach(sweet=>{
+        const div = document.createElement("div");
+        div.className = "card sweet-card";
+
+        // Image placeholder URL based on sweet name
+       // Fixed size Unsplash image for sweets
+const imageUrl = `https://images.unsplash.com/photo-1578985545062-69928b1d9587?crop=entropy&cs=tinysrgb&fit=crop&h=200&w=200`;
+
+
+        div.innerHTML = `
+          <img src="${imageUrl}" style="text-align:center;border-radius:10px;margin:auto;" alt="${sweet.name}">
+          <h4>${sweet.name}</h4>
+          <p>Category: ${sweet.category}</p>
+          <p>Price: $${sweet.price}</p>
+          <p>Available: ${sweet.quantity}</p>
+        `;
+
+        // Customer: Purchase Section
+        if(JSON.parse(localStorage.getItem("user")).role === "Customer"){
+          const purchaseDiv = document.createElement("div");
+          purchaseDiv.className = "purchase-section";
+          purchaseDiv.innerHTML = `
+            <input type="number" min="1" max="${sweet.quantity}" value="1" class="purchase-qty">
+            <button class="btn btn-primary btn-small">Purchase</button>
+          `;
+          div.appendChild(purchaseDiv);
+
+          const purchaseBtn = purchaseDiv.querySelector("button");
+          purchaseBtn.addEventListener("click", async ()=>{
+            const qty = parseInt(purchaseDiv.querySelector("input").value);
+            if(qty < 1 || qty > sweet.quantity){
+              showAlert("Invalid quantity");
+              return;
+            }
+            try {
+              const res = await fetch(`/api/sweets/${sweet.id}/purchase/`, {
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json",
+                  "Authorization": `Bearer ${localStorage.getItem("access")}`
+                },
+                body: JSON.stringify({quantity: qty})
+              });
+              const data = await res.json();
+              if(res.ok){
+                showAlert(`Purchased ${qty} ${sweet.name}`, false);
+                loadSweets(); // refresh grid
+              } else {
+                showAlert(data.error || "Purchase failed");
+              }
+            } catch(err){
+              console.error(err);
+              showAlert("Purchase error");
+            }
+          });
+        }
+
+        // Admin: Delete & Restock
+        if(JSON.parse(localStorage.getItem("user")).role === "Admin"){
+          const adminDiv = document.createElement("div");
+          adminDiv.className = "admin-section";
+          adminDiv.innerHTML = `
+            <button class="btn btn-danger btn-small">Delete</button>
+            <input type="number" min="1" placeholder="Restock qty" class="restock-qty">
+            <button class="btn btn-secondary btn-small">Restock</button>
+          `;
+          div.appendChild(adminDiv);
+
+          // Delete button
+          adminDiv.querySelector(".btn-danger").addEventListener("click", async ()=>{
+            if(!confirm(`Delete ${sweet.name}?`)) return;
+            try {
+              const res = await fetch(`/api/sweets/${sweet.id}/delete/`, {
+                method:"DELETE",
+                headers:{
+                  "Authorization": `Bearer ${localStorage.getItem("access")}`
+                }
+              });
+              if(res.ok){
+                showAlert(`${sweet.name} deleted`, false);
+                loadSweets();
+              } else {
+                const data = await res.json();
+                showAlert(data.error || "Delete failed");
+              }
+            } catch(err){
+              console.error(err);
+              showAlert("Delete error");
+            }
+          });
+
+          // Restock button
+          adminDiv.querySelector(".btn-secondary").addEventListener("click", async ()=>{
+            const qty = parseInt(adminDiv.querySelector(".restock-qty").value);
+            if(qty < 1){
+              showAlert("Enter valid restock quantity");
+              return;
+            }
+            try {
+              const res = await fetch(`/inventory/${sweet.id}/restock`, {
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json",
+                  "Authorization": `Bearer ${localStorage.getItem("access")}`
+                },
+                body: JSON.stringify({quantity: qty})
+              });
+              const data = await res.json();
+              if(res.ok){
+                showAlert(`${sweet.name} restocked by ${qty}`, false);
+                loadSweets();
+              } else {
+                showAlert(data.error || "Restock failed");
+              }
+            } catch(err){
+              console.error(err);
+              showAlert("Restock error");
+            }
+          });
+        }
+
+        sweetsGrid.appendChild(div);
+      });
+    } else {
+      showAlert("Failed to load sweets");
+    }
+  } catch(err){
+    console.error(err);
+    showAlert("Error loading sweets");
+  }
+}
+
+});
+</script>
+<!-- Add this modal div inside <body> but outside container -->
+<div id="purchaseModal" class="hidden modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h3 id="modalSweetName"></h3>
+    <p>Price: $<span id="modalSweetPrice"></span></p>
+    <div class="form-group">
+      <label>Quantity:</label>
+      <input type="number" id="modalQty" min="1" value="1">
     </div>
-
-    <script>
-        const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        let currentUser = null;
-        let authToken = null;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuthStatus();
-            setupEventListeners();
-        });
-
-         function checkAuthStatus() {
-            const savedToken = localStorage.getItem('authToken');
-            const savedUser = localStorage.getItem('currentUser');
-            
-            console.log('Checking auth status...');
-            console.log('Saved token exists:', !!savedToken);
-            console.log('Saved user exists:', !!savedUser);
-            
-            if (savedToken && savedUser) {
-                authToken = savedToken;
-                currentUser = JSON.parse(savedUser);
-                console.log('Restored user:', currentUser);
-                showMainApp();
-            } else {
-                console.log('No saved auth found, showing login');
-            }
-        }
-
-
-        function setupEventListeners() {
-            // Auth form toggles
-            document.getElementById('showRegister').addEventListener('click', (e) => {
-                e.preventDefault();
-                showRegister();
-            });
-            
-            document.getElementById('showLogin').addEventListener('click', (e) => {
-                e.preventDefault();
-                showLogin();
-            });
-
-            // Forms
-            document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
-            document.getElementById('registerFormElement').addEventListener('submit', handleRegister);
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-
-            // Navigation tabs
-            document.querySelectorAll('.nav-item').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-            });
-
-            // Search
-            document.getElementById('searchBtn').addEventListener('click', performSearch);
-
-            // Admin actions
-            document.getElementById('addSweetBtn').addEventListener('click', () => openModal('addSweetModal'));
-            document.getElementById('addSweetForm').addEventListener('submit', handleAddSweet);
-            document.getElementById('editSweetForm').addEventListener('submit', handleEditSweet);
-            document.getElementById('restockForm').addEventListener('submit', handleRestock);
-
-            // Modal close buttons
-            document.querySelectorAll('.close').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    closeModal(e.target.closest('.modal').id);
-                });
-            });
-
-            // Click outside to close modals
-            window.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal')) {
-                    e.target.style.display = 'none';
-                }
-            });
-        }
-
-        // Utility Functions
-         function showAlert(message, type = 'info') {
-            console.log(`Alert [${type}]: ${message}`);
-            
-            const container = document.getElementById('alertContainer');
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            alert.style.opacity = '0';
-            alert.style.transform = 'translateY(-10px)';
-            alert.style.transition = 'all 0.3s ease';
-            
-            container.appendChild(alert);
-            
-            // Trigger animation
-            setTimeout(() => {
-                alert.style.opacity = '1';
-                alert.style.transform = 'translateY(0)';
-            }, 10);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-10px)';
-                setTimeout(() => {
-                    if (alert.parentNode) {
-                        alert.remove();
-                    }
-                }, 300);
-            }, 5000);
-        }
-
-async function apiCall(endpoint, options = {}) {
-            const url = `${API_BASE_URL}${endpoint}`;
-            const headers = {
-                'Content-Type': 'application/json',
-                ...options.headers
-            };
-
-            if (authToken && !endpoint.includes('register') && !endpoint.includes('login')) {
-                headers['Authorization'] = `Bearer ${authToken}`;
-                console.log('Using auth token:', authToken.substring(0, 20) + '...');
-            }
-
-            console.log(`API Call: ${options.method || 'GET'} ${url}`);
-            console.log('Headers:', headers);
-            if (options.body) {
-                console.log('Request body:', JSON.parse(options.body));
-            }
-
-            try {
-                const response = await fetch(url, { ...options, headers });
-                const data = await response.json();
-                
-                console.log(`Response status: ${response.status}`);
-                console.log('Response data:', data);
-                
-                if (!response.ok) {
-                    throw new Error(data.message || data.error || `HTTP ${response.status}: Request failed`);
-                }
-                
-                return data;
-            } catch (error) {
-                console.error('API Error:', error);
-                throw error;
-            }
-        }
-
-
-        // Authentication
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                const data = await apiCall('/login/', {
-                    method: 'POST',
-                    body: JSON.stringify({ username, password })
-                });
-                
-                if (!data.verified) {
-                    showAlert('Please verify your email before logging in.', 'error');
-                    console.log('User email not verified');
-                    return;
-                }
-                
-                authToken = data.access;
-                currentUser = {
-                    username: data.username,
-                    role: data.role,
-                    verified: data.verified
-                };
-                
-                localStorage.setItem('authToken', authToken);
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                showAlert('Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = '/home/';
-                }, 1500);
-                
-            } catch (error) {
-                showAlert(error.message, 'error');
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('registerUsername').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const role = document.getElementById('registerRole').value;
-            
-            try {
-                await apiCall('/register/', {
-                    method: 'POST',
-                    body: JSON.stringify({ username, email, password, role })
-                });
-                
-                showAlert('Account created! Please check your email for verification.', 'success');
-                showLogin();
-                document.getElementById('registerFormElement').reset();
-                
-            } catch (error) {
-                showAlert(error.message, 'error');
-            }
-        }
-
-        async function handleLogout() {
-            try {
-                await apiCall('/logout/', { method: 'POST' });
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-            
-            authToken = null;
-            currentUser = null;
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('currentUser');
-            
-            showAuthSection();
-            showAlert('Signed out successfully', 'info');
-        }
-
-        // UI Navigation
-        function showLogin() {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
-        }
-
-        function showRegister() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-        }
-
-        function showAuthSection() {
-            document.getElementById('authSection').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('hidden');
-        }
-
-        function showMainApp() {
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('userRole').textContent = currentUser.role;
-            
-            if (currentUser.role === 'Admin') {
-                document.getElementById('adminTab').classList.remove('hidden');
-            }
-            
-            loadSweets();
-        }
-
-        function switchTab(tabName) {
-            // Update nav
-            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
-            
-            if (tabName === 'admin') {
-                loadAdminSweets();
-            }
-        }
-
-        // Sweet Management
-        async function loadSweets() {
-            try {
-                const sweets = await apiCall('/api/sweets/');
-                displaySweets(sweets, 'sweetsGrid');
-            } catch (error) {
-                showAlert('Failed to load sweets: ' + error.message, 'error');
-            }
-        }
-
-        async function loadAdminSweets() {
-            try {
-                const sweets = await apiCall('/api/sweets/');
-                displayAdminSweets(sweets, 'adminSweetsGrid');
-            } catch (error) {
-                showAlert('Failed to load sweets: ' + error.message, 'error');
-            }
-        }
-
-        function displaySweets(sweets, containerId) {
-            const container = document.getElementById(containerId);
-            
-            if (sweets.length === 0) {
-                container.innerHTML = '<div class="empty-state">No sweets available</div>';
-                return;
-            }
-            
-            container.innerHTML = sweets.map(sweet => `
-                <div class="sweet-card">
-                    <h3>${sweet.name}</h3>
-                    <div class="sweet-info">
-                        <span class="sweet-tag">${sweet.category}</span>
-                        <span class="sweet-tag price">₹${sweet.price}</span>
-                        <span class="sweet-tag ${sweet.quantity < 5 ? 'stock-low' : ''}">
-                            Stock: ${sweet.quantity}
-                        </span>
-                    </div>
-                    <div class="sweet-actions">
-                        <button class="btn btn-primary" onclick="purchaseSweet(${sweet.id})" 
-                                ${sweet.quantity === 0 ? 'disabled' : ''}>
-                            ${sweet.quantity === 0 ? 'Out of Stock' : 'Purchase'}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function displayAdminSweets(sweets, containerId) {
-            const container = document.getElementById(containerId);
-            
-            if (sweets.length === 0) {
-                container.innerHTML = '<div class="empty-state">No sweets available</div>';
-                return;
-            }
-            
-            container.innerHTML = sweets.map(sweet => `
-                <div class="sweet-card">
-                    <h3>${sweet.name}</h3>
-                    <div class="sweet-info">
-                        <span class="sweet-tag">${sweet.category}</span>
-                        <span class="sweet-tag price">₹${sweet.price}</span>
-                        <span class="sweet-tag ${sweet.quantity < 5 ? 'stock-low' : ''}">
-                            Stock: ${sweet.quantity}
-                        </span>
-                    </div>
-                    <div class="sweet-actions">
-                        <button class="btn btn-primary" onclick="editSweet(${sweet.id}, '${sweet.name}', '${sweet.category}', ${sweet.price}, ${sweet.quantity})">
-                            Edit
-                        </button>
-                        <button class="btn btn-success" onclick="openRestockModal(${sweet.id})">
-                            Restock
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteSweet(${sweet.id})">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function purchaseSweet(sweetId) {
-            try {
-                await apiCall(`/api/sweets/${sweetId}/purchase/`, { method: 'POST' });
-                showAlert('Sweet purchased successfully!', 'success');
-                loadSweets();
-                
-                // Refresh admin view if active
-                if (!document.getElementById('adminTab').classList.contains('hidden') && 
-                    document.querySelector('[data-tab="admin"]').classList.contains('active')) {
-                    loadAdminSweets();
-                }
-                
-            } catch (error) {
-                showAlert('Purchase failed: ' + error.message, 'error');
-            }
-        }
-
-        // Search
-        async function performSearch() {
-            const name = document.getElementById('searchName').value;
-            const category = document.getElementById('searchCategory').value;
-            const minPrice = document.getElementById('minPrice').value;
-            const maxPrice = document.getElementById('maxPrice').value;
-            
-            const params = new URLSearchParams();
-            if (name) params.append('name', name);
-            if (category) params.append('category', category);
-            if (minPrice) params.append('min_price', minPrice);
-            if (maxPrice) params.append('max_price', maxPrice);
-            
-            try {
-                const sweets = await apiCall(`/api/sweets/search/?${params.toString()}`);
-                displaySweets(sweets, 'searchResults');
-            } catch (error) {
-                showAlert('Search failed: ' + error.message, 'error');
-            }
-        }
-
-        // Admin Functions
-        async function handleAddSweet(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('sweetName').value;
-            const category = document.getElementById('sweetCategory').value;
-            const price = document.getElementById('sweetPrice').value;
-            const quantity = document.getElementById('sweetQuantity').value;
-            
-            try {
-                await apiCall('/api/sweets/', {
-                    method: 'POST',
-                    body: JSON.stringify({ name, category, price, quantity })
-                });
-                
-                closeModal('addSweetModal');
-                showAlert('Sweet added successfully!', 'success');
-                loadSweets();
-                loadAdminSweets();
-                document.getElementById('addSweetForm').reset();
-                
-            } catch (error) {
-                showAlert('Failed to add sweet: ' + error.message, 'error');
-            }
-        }
-
-        function editSweet(id, name, category, price, quantity) {
-            document.getElementById('editSweetId').value = id;
-            document.getElementById('editSweetName').value = name;
-            document.getElementById('editSweetCategory').value = category;
-            document.getElementById('editSweetPrice').value = price;
-            document.getElementById('editSweetQuantity').value = quantity;
-            openModal('editSweetModal');
-        }
-
-        async function handleEditSweet(e) {
-            e.preventDefault();
-            
-            const id = document.getElementById('editSweetId').value;
-            const name = document.getElementById('editSweetName').value;
-            const category = document.getElementById('editSweetCategory').value;
-            const price = document.getElementById('editSweetPrice').value;
-            const quantity = document.getElementById('editSweetQuantity').value;
-            
-            try {
-                await apiCall(`/api/sweets/${id}/`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ name, category, price, quantity })
-                });
-                
-                closeModal('editSweetModal');
-                showAlert('Sweet updated successfully!', 'success');
-                loadSweets();
-                loadAdminSweets();
-                
-            } catch (error) {
-                showAlert('Failed to update sweet: ' + error.message, 'error');
-            }
-        }
-
-        function openRestockModal(sweetId) {
-            document.getElementById('restockSweetId').value = sweetId;
-            openModal('restockModal');
-        }
-
-        async function handleRestock(e) {
-            e.preventDefault();
-            
-            const id = document.getElementById('restockSweetId').value;
-            const quantity = document.getElementById('restockQuantity').value;
-            
-            try {
-                await apiCall(`/api/sweets/${id}/restock/`, {
-                    method: 'POST',
-                    body: JSON.stringify({ quantity })
-                });
-                
-                closeModal('restockModal');
-                showAlert('Sweet restocked successfully!', 'success');
-                loadSweets();
-                loadAdminSweets();
-                document.getElementById('restockForm').reset();
-                
-            } catch (error) {
-                showAlert('Failed to restock sweet: ' + error.message, 'error');
-            }
-        }
-
-        async function deleteSweet(sweetId) {
-            if (!confirm('Are you sure you want to delete this sweet?')) return;
-            
-            try {
-                await apiCall(`/api/sweets/${sweetId}/`, { method: 'DELETE' });
-                showAlert('Sweet deleted successfully!', 'success');
-                loadSweets();
-                loadAdminSweets();
-                
-            } catch (error) {
-                showAlert('Failed to delete sweet: ' + error.message, 'error');
-            }
-        }
-
-        // Modal Management
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
+    <div class="form-group">
+      <label>Payment Method:</label>
+      <select id="modalPayment">
+        <option value="cod">Cash on Delivery</option>
+        <option value="upi">UPI</option>
+      </select>
+    </div>
+    <div id="upiImageContainer" class="hidden">
+      <img src="{% static 'image/upi.png' %}" alt="UPI" style="width:150px;margin-top:10px;">
+    </div>
+    <button id="confirmPurchase" class="btn btn-primary btn-full">Confirm Purchase</button>
+  </div>
+</div>
+</body>
+</html>
